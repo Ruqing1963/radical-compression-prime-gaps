@@ -1,0 +1,410 @@
+% ═══════════════════════════════════════════════════════════════════════
+% Radical Compression in Maximal Prime Gaps:
+% Asymptotics and the Transient Stability Illusion
+% Titan Project — Paper XI (revised) — February 2026
+% ═══════════════════════════════════════════════════════════════════════
+
+\documentclass[11pt, a4paper]{article}
+
+\usepackage[top=28mm, bottom=28mm, left=25mm, right=25mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{mathrsfs}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{float}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{question}[theorem]{Open Question}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\rad}{\mathrm{rad}}
+
+\title{\textbf{Radical Compression in Maximal Prime Gaps: \\
+Asymptotics and the Transient Stability Illusion}}
+\author{Ruqing Chen\\[4pt]
+\small GUT Geoservice Inc., Montr\'eal, Canada\\[2pt]
+\small \texttt{ruqing@hotmail.com}\\[2pt]
+\small Repository:
+\url{https://github.com/Ruqing1963/radical-compression-prime-gaps}}
+\date{February 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+For a prime gap of length $g$ starting at a prime $p$,
+we define the \emph{radical compression ratio}
+$q = \log(\prod C_i) / \log \rad(\prod C_i)$,
+where the product ranges over the $g - 1$ consecutive
+composites in the gap.
+This ratio measures the extent to which composites in a
+prime gap share prime factors.
+We prove, using Legendre's formula and Mertens' estimates,
+that
+\begin{equation*}
+    q \;=\; 1 + \frac{\log g}{\log X} + O\!\left(\frac{1}{\log X}\right),
+\end{equation*}
+where $X$ is the starting prime.
+In the Cram\'er regime $g \sim c\log^2 X$, this yields
+$q = 1 + \frac{2\log\log X}{\log X} + O(1/\log X) \to 1$
+as $X \to \infty$.
+Thus, no finite ``stabilization'' of $q$ occurs;
+the apparent stability near $q \approx 1.30$ observed for
+$X \le 10^7$ is a transient artifact of the extremely slow
+decay of $\log\log X / \log X$.
+We verify this asymptotic formula against all 25
+maximal prime gaps up to $10^8$, finding agreement to
+within $3\%$ for $g \ge 36$.
+The radical compression ratio provides a clean
+multiplicative perspective on prime gaps that complements
+the classical additive/probabilistic approach of Cram\'er.
+\end{abstract}
+
+\bigskip
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Introduction}\label{sec:intro}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{Motivation}
+
+Cram\'er's conjecture \cite{Cramer1936} asserts that
+$g_n = O((\log p_n)^2)$,
+where $g_n = p_{n+1} - p_n$ is the $n$-th prime gap.
+The conjecture is supported by a probabilistic model in
+which each integer $m$ is ``prime'' independently with
+probability $1/\log m$.
+This model is purely additive: it treats primality as a
+coin toss and ignores the multiplicative anatomy of the
+composites that fill a prime gap.
+
+In this paper, we take the complementary multiplicative
+viewpoint.
+We ask: \emph{how much do the composites in a prime gap
+share their prime factors?}
+We quantify this via the \emph{radical compression ratio}
+$q$, which compares the log-product of the composites to
+the log-radical of their collective product.
+
+Our main result is that $q$ admits an explicit asymptotic
+formula in terms of $g$ and $X$ (Theorem~\ref{thm:main}),
+from which $q \to 1$ as $X \to \infty$ in the
+Cram\'er regime.
+This resolves the initial impression from limited numerical
+data that $q$ ``stabilizes'' around $1.3$---an illusion
+created by the notoriously slow decay of the iterated
+logarithm $\log\log X / \log X$.
+
+\subsection{Context within the Titan Project}
+
+In companion papers, we proved algebraic structure theorems
+for Legendre and Oppermann intervals:
+the Spin Asymmetry Theorem \cite{ChenSpin}
+(global quadratic residue skewness $= 1$)
+and the Oppermann Parity Law \cite{ChenOpp}
+(zero right-half skewness for even $n$).
+Those results concern the additive/algebraic axis
+(residue classes modulo $p = 2n - 1$).
+The present paper addresses the multiplicative axis
+(radical of consecutive composites), completing a
+two-sided view of the arithmetic structure of prime gaps.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Definitions}\label{sec:definitions}
+% ═══════════════════════════════════════════════════════════════════════
+
+\begin{definition}[Radical compression ratio]\label{def:q}
+For a prime gap of length $g$ starting at a prime $p$,
+the \emph{composite sequence} is
+$\mathcal{C} = \{p+1, p+2, \ldots, p+g-1\}$.
+The \emph{radical compression ratio} is
+\begin{equation}\label{eq:q}
+    q(p, g)
+    \;=\;
+    \frac{N}{D}
+    \;=\;
+    \frac{\displaystyle\sum_{c \in \mathcal{C}} \log c}
+    {\displaystyle\sum_{\ell \in \mathcal{P}(\mathcal{C})} \log \ell},
+\end{equation}
+where $\mathcal{P}(\mathcal{C})
+= \{\ell \text{ prime} : \ell \mid c \text{ for some }
+c \in \mathcal{C}\}$
+is the set of all distinct prime factors of the sequence.
+\end{definition}
+
+\begin{remark}[Relation to the ABC quality]\label{rem:abc}
+For a single ABC triple $(a,b,c)$ with $a + b = c$,
+the \emph{quality} is
+$q(a,b,c) = \log c / \log \rad(abc)$.
+Our ratio $q(p,g)$ is analogous but applied to
+a \emph{product} of a sequence.
+It is not an ABC quality, and we make no claims
+involving the ABC conjecture.
+\end{remark}
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Asymptotic Analysis}\label{sec:asymptotics}
+% ═══════════════════════════════════════════════════════════════════════
+
+\begin{theorem}[Radical compression asymptotics]
+\label{thm:main}
+Let $\mathcal{C}$ be a sequence of $g - 1$ consecutive
+integers near $X$ (all elements in $[X, X+g]$),
+with $g \ge 2$ and $X \ge g^2$.
+Then
+\begin{equation}\label{eq:asymp}
+    q \;=\; 1 + \frac{\log g}{\log X}
+    + O\!\left(\frac{1}{\log X}\right).
+\end{equation}
+In the Cram\'er regime $g \sim c (\log X)^2$:
+\begin{equation}\label{eq:cramer_regime}
+    q \;=\; 1 + \frac{2\log\log X + \log c}{\log X}
+    + O\!\left(\frac{1}{\log X}\right)
+    \;\xrightarrow{X \to \infty}\; 1.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+We compute the numerator $N$ and the excess $N - D$.
+
+\textbf{Numerator.}
+$N = \sum_{c \in \mathcal{C}} \log c
+= (g-1)\log X + O(g)$,
+since $\log(X + j) = \log X + O(g/X)$ for $0 \le j \le g$.
+
+\textbf{Excess via Legendre's formula.}
+The excess $N - D$ equals
+$\sum_{\ell \mid \prod \mathcal{C}}
+(v_\ell(\prod \mathcal{C}) - 1) \log \ell$,
+where $v_\ell$ denotes the $\ell$-adic valuation.
+
+\emph{Small primes} ($\ell \le g$):
+By Legendre's formula,
+$v_\ell(\prod \mathcal{C})
+= \sum_{k \ge 1} \lfloor(g-1)/\ell^k\rfloor
+= (g-1)/(\ell - 1) + O(\log_\ell g)$.
+Thus the small-prime contribution to $N - D$ is
+\begin{align*}
+    \sum_{\ell \le g}
+    \left(\frac{g-1}{\ell - 1} - 1\right) \log \ell
+    &= (g-1)\sum_{\ell \le g} \frac{\log \ell}{\ell - 1}
+       - \theta(g) + O(g) \\
+    &= (g-1)(\log g + O(1)) - (g + o(g)) + O(g) \\
+    &= g\log g + O(g),
+\end{align*}
+using Mertens' estimate
+$\sum_{\ell \le x} \log \ell / (\ell - 1) = \log x + O(1)$
+and Chebyshev's $\theta(g) = g + o(g)$.
+
+\emph{Large primes} ($\ell > g$):
+Each such prime divides at most one element of $\mathcal{C}$,
+so the excess is nonzero only from prime powers
+$\ell^k \mid c$ with $k \ge 2$.
+This contributes $O(g)$ in total.
+
+\textbf{Combining.}
+$N - D = g\log g + O(g)$, so
+$D = g\log X - g\log g + O(g) = g(\log X - \log g) + O(g)$.
+Therefore
+\[
+    q = \frac{N}{D}
+    = \frac{g\log X + O(g)}{g(\log X - \log g) + O(g)}
+    = \frac{\log X}{\log X - \log g + O(1)}
+    = 1 + \frac{\log g}{\log X}
+      + O\!\left(\frac{1}{\log X}\right).
+\]
+Substituting $g = c\log^2 X$ gives \eqref{eq:cramer_regime}.
+\end{proof}
+
+\begin{corollary}\label{cor:limit}
+If the Cram\'er conjecture holds, then the radical
+compression of maximal prime gaps satisfies
+$\lim_{n\to\infty} q = 1$.
+\end{corollary}
+
+\begin{remark}[Rate of decay]\label{rem:rate}
+The decay $2\log\log X / \log X$ is notoriously slow:
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{@{}l r@{}}
+\toprule
+$X$ & $1 + 2\log\log X / \log X$ \\
+\midrule
+$10^{6}$    & 1.380 \\
+$10^{12}$   & 1.240 \\
+$10^{50}$   & 1.082 \\
+$10^{100}$  & 1.047 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The passage from $q \approx 1.30$ to $q \approx 1.05$
+requires $X$ to increase from $10^7$ to $10^{100}$.
+This explains why limited numerical experiments create
+an illusion of ``stabilization.''
+\end{remark}
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Computational Verification}\label{sec:data}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{Methodology}
+
+We enumerated all primes up to $10^8$ via sieve,
+identified all 25 maximal (record-breaking) prime gaps,
+and computed $q$ by fully factoring every composite.
+
+\subsection{Data}
+
+\begin{table}[H]
+\centering
+\caption{Maximal prime gaps with $g \ge 20$ up to $10^8$.
+$q_{\mathrm{obs}}$ = observed;
+$q_{\mathrm{pred}} = 1 + \log g / \log P_n$.}
+\label{tab:data}
+\medskip
+\begin{tabular}{@{}r r r r r r@{}}
+\toprule
+$P_n$ & $g$ & $\rho$ & $q_{\mathrm{obs}}$ &
+$q_{\mathrm{pred}}$ & Error \\
+\midrule
+887         & 20  & 0.434 & 1.421 & 1.441 & $-1.4\%$ \\
+1\,129      & 22  & 0.445 & 1.376 & 1.440 & $-4.5\%$ \\
+1\,327      & 34  & 0.658 & 1.541 & 1.490 & $+3.4\%$ \\
+9\,551      & 36  & 0.429 & 1.371 & 1.391 & $-1.5\%$ \\
+15\,683     & 44  & 0.472 & 1.382 & 1.392 & $-0.7\%$ \\
+19\,609     & 52  & 0.532 & 1.374 & 1.400 & $-1.8\%$ \\
+31\,397     & 72  & 0.672 & 1.424 & 1.413 & $+0.8\%$ \\
+155\,921    & 86  & 0.602 & 1.377 & 1.373 & $+0.3\%$ \\
+360\,653    & 96  & 0.586 & 1.346 & 1.357 & $-0.8\%$ \\
+370\,261    & 112 & 0.681 & 1.371 & 1.368 & $+0.2\%$ \\
+492\,113    & 114 & 0.664 & 1.343 & 1.361 & $-1.4\%$ \\
+1\,349\,533 & 118 & 0.592 & 1.333 & 1.338 & $-0.4\%$ \\
+1\,357\,201 & 132 & 0.662 & 1.336 & 1.346 & $-0.7\%$ \\
+2\,010\,733 & 148 & 0.703 & 1.339 & 1.344 & $-0.4\%$ \\
+4\,652\,353 & 154 & 0.653 & 1.304 & 1.328 & $-1.8\%$ \\
+17\,051\,707& 180 & 0.649 & 1.294 & 1.312 & $-1.3\%$ \\
+20\,831\,323& 210 & 0.740 & 1.306 & 1.317 & $-0.8\%$ \\
+47\,326\,693& 220 & 0.704 & 1.294 & 1.305 & $-0.8\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{observation}[Agreement with asymptotics]
+\label{obs:agreement}
+For all $g \ge 36$ (15 data points), the prediction
+$q_{\mathrm{pred}} = 1 + \log g / \log X$
+agrees with $q_{\mathrm{obs}}$ to within $3.5\%$.
+The systematic negative bias is consistent with the
+$O(1/\log X)$ correction term.
+\end{observation}
+
+\begin{observation}[Steady decline]\label{obs:decline}
+$q_{\mathrm{obs}}$ decreases from $1.54$ at
+$P_n = 1327$ to $1.29$ at $P_n = 47{,}326{,}693$,
+consistent with the proven asymptotic decay to $1$.
+The apparent plateau near $1.30$ for
+$X \in [10^6, 10^7]$ is a transient artifact.
+\end{observation}
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Discussion}\label{sec:discussion}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{The decompression mechanism}
+
+The formula $q = 1 + \log g/\log X + O(1/\log X)$
+has a clean interpretation.
+The excess $N - D \approx g\log g$ is generated by
+\emph{small} primes ($\ell \le g$), each dividing multiple
+composites in the gap.
+But the denominator $D$ is dominated by \emph{large}
+prime factors ($\ell > g$), each unique to a single
+composite and contributing $\sim \tfrac{1}{2}\log X$
+to $D$.
+As $X$ grows, these large primes increasingly dilute
+the small-prime compression, driving $q \to 1$.
+
+\subsection{Relation to the ABC conjecture}
+
+The ABC conjecture bounds the quality of individual triples
+$a + b = c$.
+The radical compression $q$ measures the collective
+compression of a \emph{sequence}.
+The boundedness of $q$ follows from elementary analysis
+(Theorem~\ref{thm:main}), not from the ABC conjecture.
+
+\subsection{Open questions}
+
+\begin{question}[Explicit error term]\label{q:explicit}
+Can the $O(1/\log X)$ in \eqref{eq:asymp} be made
+explicit, e.g., $q = 1 + \log g/\log X + C/\log X + o(1/\log X)$
+for an identifiable constant $C$?
+\end{question}
+
+\begin{question}[Oscillation structure]\label{q:oscillation}
+The residual $q_{\mathrm{obs}} - q_{\mathrm{pred}}$
+oscillates between $-4.5\%$ and $+3.4\%$.
+Is there a secondary term capturing these fluctuations?
+\end{question}
+
+\begin{question}[Non-record gaps]\label{q:nonrecord}
+The proof of Theorem~\ref{thm:main} applies to any
+$g - 1$ consecutive integers, not just composites.
+For typical (non-record) prime gaps, how does $q$
+behave?
+\end{question}
+
+\subsection*{Data and code availability}
+
+Scanning scripts and the complete dataset are available at
+the repository linked on the title page.
+
+% ═══════════════════════════════════════════════════════════════════════
+\begin{thebibliography}{99}
+
+\bibitem{ChenSpin}
+  R.~Chen,
+  ``Algebraic rigidity and quadratic residue asymmetry
+  in Legendre intervals,''
+  Zenodo, 2026.
+  \url{https://zenodo.org/records/18706876}
+
+\bibitem{ChenOpp}
+  R.~Chen,
+  ``Oppermann's parity law: quadratic residue symmetry
+  breaking in half-intervals via the negation involution,''
+  Zenodo, 2026.
+  \url{https://zenodo.org/records/18707265}
+
+\bibitem{ChenFF}
+  R.~Chen,
+  ``The geometry of prime vacuums: Legendre's conjecture
+  in function fields via monodromy and Chebotarev density,''
+  Zenodo, 2026.
+  \url{https://zenodo.org/records/18705744}
+
+\bibitem{Cramer1936}
+  H.~Cram\'er,
+  ``On the order of magnitude of the difference between
+  consecutive prime numbers,''
+  \textit{Acta Arith.}\ \textbf{2} (1936), 23--46.
+
+\bibitem{Granville1995}
+  A.~Granville,
+  ``Harald Cram\'er and the distribution of prime numbers,''
+  \textit{Scand.\ Actuar.\ J.}\ \textbf{1995} (1995), 12--28.
+
+\end{thebibliography}
+
+\end{document}
